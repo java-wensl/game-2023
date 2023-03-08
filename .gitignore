@@ -1,0 +1,57 @@
+HELP.md
+
+!**/src/main/**
+!**/src/test/**
+#package file
+*.war
+*.ear
+
+#kdiff3 ignoe
+*.orig
+#maven ignore
+target/
+!.mvn/wrapper/maven-wrapper.jar
+#eclipse ignore
+.settings/
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+#idea ignore
+./idea
+*.imp
+.idea
+*.iws
+*.iml
+*.ipr
+
+#pom.xml
+.history
+
+#temp file
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+#system ignore
+.DS_Store
+Thumbs.db
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+.history
+
+### VS Code ###
+.vscode/
+## **/src/test/
+**/doc/md/
