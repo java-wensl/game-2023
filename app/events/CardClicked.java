@@ -44,7 +44,6 @@ public class CardClicked implements EventProcessor{
 				BasicCommands.drawCard(out, card,handPosition, 1);
 				gameState.setCardHighLighted(true);
 				gameState.setCardHightLightPosition(handPosition);
-				BasicCommands.addPlayer1Notification(out, "人工放置卡片：" + handPosition, 2);
 				try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 			}
 			

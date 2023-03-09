@@ -187,29 +187,65 @@ public class Unit {
             } else {
                 if (!ShowScale.getRound(Board.getTile(this.position.tilex, this.position.tiley)).contains(tileOfAttacked)) {
                     Tile tile = attackedUnit.get(tileOfAttacked);
-                    //xia
-                    tile.setHaveHumanUnit(true);
-                    this.move(out, tile);
+                    if (null != tile) {
+                        //xia
+                        tile.setHaveHumanUnit(true);
+                        this.move(out, tile);
+                    }
                 }
                 this.attack(out, tileOfAttacked, true);
             }
         }
     }
 
+    //xia
+    public void attackHum(ActorRef out, Tile tileOfAttacked) {
+        System.out.println("----可进行攻击次数：" + this.getAttackRound());
+        if (this.getAttackRound() > 0) {
+            tileOfAttacked.canBeAttack = false;
+            this.attackRound--;
+            System.out.println("----进行攻击" + this.getId());
+            if (this.getId() == 22 || this.getId() == 31) {
+                if (ShowScale.getRound(Board.getTile(this.position.tilex, this.position.tiley)).contains(tileOfAttacked)) {
+                    this.attack(out, tileOfAttacked, true);
+                } else {
+                    this.attack(out, tileOfAttacked, false);
+                }
+            } else {
+                if (!ShowScale.getRound(Board.getTile(this.position.tilex, this.position.tiley)).contains(tileOfAttacked)) {
+                    this.attackRound++;
+                    return;
+                }
+                this.attack(out, tileOfAttacked, true);
+            }
+        }
+    }
+    //xia
     public void attack(ActorRef out, Tile tileOfAttacked, boolean canCounter) {
+        if (null == tileOfAttacked || null == tileOfAttacked.getUnit()) {
+            return;
+        }
         BasicCommands.addPlayer1Notification(out, "playUnitAnimation [Attack]", 2);
         BasicCommands.playUnitAnimation(out, this, UnitAnimationType.attack);
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         BasicCommands.playUnitAnimation(out, tileOfAttacked.getUnit(), UnitAnimationType.hit);
-        try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         BasicCommands.playUnitAnimation(out, this, UnitAnimationType.idle);
-        try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if (tileOfAttacked.getUnit().getHealth() <= this.attack) {
             tileOfAttacked.getUnit().death(out);
@@ -219,12 +255,16 @@ public class Unit {
             BasicCommands.addPlayer1Notification(out, "setUnitHealth", 2);
             BasicCommands.setUnitHealth(out, tileOfAttacked.getUnit(), tileOfAttacked.getUnit().getHealth());
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             BasicCommands.playUnitAnimation(out, tileOfAttacked.getUnit(), UnitAnimationType.idle);
-            try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (canCounter) {
                 tileOfAttacked.getUnit().attack(out, Board.getTile(this.position.tilex, this.position.tiley), false);
             }

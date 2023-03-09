@@ -1,6 +1,7 @@
 package New;
 
 
+import actors.GameActor;
 import akka.actor.ActorRef;
 import com.fasterxml.jackson.databind.JsonNode;
 import commands.BasicCommands;
@@ -14,11 +15,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//xia
 public class endTurn {
 
     private static Map<Integer, Unit> aiUnitMap;
 
     public static void endTurnClicked(ActorRef out, GameState gameState, JsonNode message) {
+        if (!GameActor.getGameState().something) {
+            BasicCommands.addPlayer2Notification(out, "Game over", 2);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         DrawCard.drawCard(out);
 
@@ -74,24 +85,34 @@ public class endTurn {
         }
         Map<String, Position> positionMap = new HashMap<>();
         for (Tile tile : aiTileList) {
+            if (!GameActor.getGameState().something) {
+                BasicCommands.addPlayer2Notification(out, "Game over", 2);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
             Unit unit = tile.getUnit();
             Tile newTile = moveTo(unit.getPosition().getTilex(), unit.getPosition().getTiley());
-            if (null != newTile) {
-                if (null != newTile.getUnit()) {
-                    continue;
-                }
+            if (null != newTile && null == newTile.getUnit()) {
                 newTile.setHaveAiUnit(true);
                 tile.getUnit().move(out, newTile);
                 buildPosition(positionMap, newTile.getTilex(), newTile.getTiley());
+            }
+            if (unit.getId() == 27 || unit.getId() == 37) {
+                unit.setAttackRound(2);
+            } else {
+                unit.setAttackRound(1);
+            }
 
-                if (tile.getUnit().getId() == 27 || tile.getUnit().getId() == 37) {
-                    tile.getUnit().setAttackRound(2);
-                } else {
-                    tile.getUnit().setAttackRound(1);
+            HashMap<Tile, Tile> attackMap = ShowScale.getAttackHumanArea(out, newTile);
+            System.out.println("----场上敌方单位：" + attackMap.size());
+            for (Tile t : attackMap.keySet()) {
+                if (t.canBeAttack() && unit.getAttackRound() > 0 && null != t.getUnit()) {
+                    unit.attackHum(out, t);
                 }
-
-                //进行攻击
-//                HashMap<Tile, Tile> attackMap = ShowScale.getAttackArea(out, newTile);
             }
         }
         try {

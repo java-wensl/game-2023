@@ -1,14 +1,11 @@
 package structures.basic;
 
+import akka.actor.ActorRef;
+import commands.BasicCommands;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
-import commands.BasicCommands;
-import structures.basic.Tile;
-import utils.BasicObjectBuilders;
-import akka.actor.ActorRef;
 
 public class ShowScale {
 
@@ -66,7 +63,7 @@ public class ShowScale {
     }
 
     public static boolean isUnitOnTile(Tile tile) {
-        if (tile == null){
+        if (tile == null) {
             return true;
         }
         if (tile.isHaveAiUnit()) {
@@ -106,8 +103,8 @@ public class ShowScale {
             }
         }
     }
-    
-    public static int getTarget(int x,int y) {
+
+    public static int getTarget(int x, int y) {
         if (x < 0 || y < 0 || x > 8 || y > 4) {
             return 0;
         } else {
@@ -119,17 +116,17 @@ public class ShowScale {
             }
         }
     }
+
     //如果是玩家回合，则把所有敌方单位显示为红色
     public static void boardAttackTarget(ActorRef out) {
-  
-    	for(int i = 0;i < 9;i++) {
-    		for(int j = 0;j < 5;j++) {
-    			Tile tile = Board.getTile(i, j);
-    			BasicCommands.drawTile(out, tile, getTarget(i, j));
-    		}
-    	}
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 5; j++) {
+                Tile tile = Board.getTile(i, j);
+                BasicCommands.drawTile(out, tile, getTarget(i, j));
+            }
+        }
     }
-    	
 
 
     public static void cancellScale(ActorRef out, ArrayList<Tile> tiles) {
@@ -188,7 +185,7 @@ public class ShowScale {
     public static HashMap<Tile, Tile> getAttackArea(ActorRef out, Tile tile) {
         HashMap<Tile, Tile> attackedUnit = new HashMap<Tile, Tile>();
         for (Tile i : Board.tileList) {
-            if (i.isHaveAiUnit()){
+            if (i.isHaveAiUnit()) {
                 attackedUnit.put(i, tile);
             }
         }
@@ -202,12 +199,11 @@ public class ShowScale {
     public static HashMap<Tile, Tile> getAttackHumanArea(ActorRef out, Tile tile) {
         HashMap<Tile, Tile> attackedUnit = new HashMap<Tile, Tile>();
         for (Tile i : Board.tileList) {
-            if (i.isHaveHumanUnit()){
+            if (i.isHaveHumanUnit()) {
                 attackedUnit.put(i, tile);
             }
         }
         for (Map.Entry<Tile, Tile> entry : attackedUnit.entrySet()) {
-            BasicCommands.drawTile(out, entry.getKey(), 2);
             entry.getKey().setCanBeAttack(true);
         }
         return attackedUnit;
